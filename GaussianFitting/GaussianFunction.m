@@ -1,8 +1,8 @@
 function g_add = GaussianFunction(a,x)
-    
+    disp(a)
     %define continuum
     g_add = 1;
-    disp(a)
+    
     for i = 1:size(a,2)
         
         %add the Gaussian equations

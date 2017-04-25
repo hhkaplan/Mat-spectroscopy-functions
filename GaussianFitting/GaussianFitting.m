@@ -2,6 +2,7 @@ Data = importdata('/Users/Hannah/Desktop/GREX2.csv');
 x0 = [3.38, 3.42, 3.48, 3.50];
 maxWidth = 0.05;
 maxShift = 0.0001;
+func = @GaussianFunction;
 
 for i = 2: 5%size(Data,2) 
     
@@ -19,10 +20,10 @@ for i = 2: 5%size(Data,2)
     ub = [x0 - (maxShift/2); zeros(1, size(x0,2)); maxWidth*ones(1,size(x0,2))]; 
 
     %solving options
-    options=optimset('MaxFunEvals',100000,'TolFun',1e-5,'MaxIter',10000, 'Display', 'off');
+    options=optimset('MaxFunEvals',100000,'TolFun',1e-5,'MaxIter',10000, 'Display', 'off','DiffMinChange', 1e-3);
 
     %least squares fitting
-    [a, resnorm, residual, exitflag,output, l, j] = lsqcurvefit(GaussianFunction, a0, xdata,ydata,lb,ub, options);
+    [a, resnorm, residual, exitflag,output, l, j] = lsqcurvefit(func, a0, xdata,ydata,lb,ub, options);
     
     disp(a)
     %tabulate results
@@ -31,8 +32,9 @@ for i = 2: 5%size(Data,2)
     %plot the results
     figure(i)
     plot (xdata, ydata, 'r', 'LineWidth',2, 'LineStyle', '--'); hold on;
-    plot(xdata, GaussianFunction(a, xdata), 'black', 'LineWidth', 1.2);
-    plotGaussians(xdata, a, 'gauss');
+    plot(xdata, func(a, xdata), 'black', 'LineWidth', 1.2);
+    plotGaussians(xdata, a, 'gauss'); %%%%% Change this to deal with non-gaussian scenarios, see plotGaussians for details
+    
     xlabel('Wavelength','FontSize', 14, 'FontName', 'Helvetica', 'FontWeight', 'bold');
     ylabel('Reflectance', 'FontSize', 14, 'FontName', 'Helvetica', 'FontWeight', 'bold');
     title('Gaussian Best Fit Model', 'FontSize', 16, 'FontName', 'Helvetica', 'FontWeight','bold');
