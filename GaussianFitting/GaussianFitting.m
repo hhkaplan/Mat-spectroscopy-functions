@@ -14,7 +14,10 @@
 
 %HKaplan 2017
 
-function [A, ResN] = GaussianFitting(Data, x0, func, maxWidth, maxShift)
+function [A, resN] = GaussianFitting(Data, x0, func, maxWidth, maxShift)
+
+A = struct;
+resN = zeros(size(Data,2)-1,1);
 
 for i = 2:size(Data,2) 
 %% Initializing    
@@ -23,19 +26,8 @@ for i = 2:size(Data,2)
     ydata = Data(:, i); 
     
     %Initial parameters for PV and SG distributions
-    if (func2str(func) == 'PseudoVoigtFunction')
+    if strcmp(func2str(func), 'PseudoVoigtFunction')||strcmp(func2str(func), 'SkewGaussFunction')
                 %initial guess
-        a0 =  [x0;... %band position
-            -0.05*ones(1,size(x0,2));... %band depth
-            maxWidth*ones(1,size(x0,2));...%band width
-            0.5*ones(1,size(x0,2))]; %distr
-       
-        %lower and upper bounds
-        lb = [x0 - (maxShift/2); -1*ones(1,size(x0,2)); zeros(1,size(x0,2)); zeros(1,size(x0,2))]; 
-        ub = [x0 + (maxShift/2); zeros(1, size(x0,2)); maxWidth*ones(1,size(x0,2)); ones(1,size(x0,2))];
-    
-    elseif (func2str(func) == 'SkewGaussFunction') 
-        
         a0 =  [x0;... %band position
             -0.05*ones(1,size(x0,2));... %band depth
             maxWidth*ones(1,size(x0,2));...%band width
@@ -63,12 +55,14 @@ for i = 2:size(Data,2)
     options=optimset('MaxFunEvals',100000,'TolFun',1e-5,'MaxIter',10000, 'Display', 'off','DiffMinChange', 1e-5);
 
     %least squares fitting
-    [a, resnorm, residual] = lsqcurvefit(func, a0, xdata,ydata,lb,ub, options);
+    [a, resnorm, ~] = lsqcurvefit(func, a0, xdata,ydata,lb,ub, options);
     
     %tabulate results
-    ResN(i-1) = resnorm;
+    resN(i-1) = resnorm;
+    field = strcat('Sample',num2str(i-1));
     Band_Centers = a(1,:); Band_Depths = -a(2,:); Band_Widths = a(3,:);
-    A{i} = {Band_Centers', Band_Depths', Band_Widths};
+    A.(field) = [Band_Centers', Band_Depths', Band_Widths'];
+    
     
 %% Plotting
     %plot the results
