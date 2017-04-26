@@ -1,8 +1,19 @@
+%This function fits an experimental spectrum (e.g. spectrum of a rock) with
+%endmember spectra (i.e. spectra of pure minerals we think are found in the
+%rock but in unknown quantities), to predict endmember composition.
+%A linear regression is run using Matlabs lsqlin, endmember coefficients
+%are constrained to be 0 - 1. An option is given to have endmember
+%coefficients add to 1. Fitting procedure can be weighted using a vector of
+%weights.
+
+%Example:
 % Data = data; one column wavelength, remainder are spectra with unknown composition to be fit
 % Endmembers = endmembers; first column is wavelength remainder are endmember spectra that are used to fit the unknown spectrum
 % addToOne = 1; 1- true, 0 - false; default is true;
-% weights = weighting value to add at each wavelength, default is 1s
+% weights = weighting value to add at each wavelength, default is 1 at
+% every wavelength.
 
+%HKaplan 2017
 
 function [result, resN] = LinearLSFitting(Data, Endmembers, addToOne, weights)
 
