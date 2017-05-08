@@ -21,14 +21,14 @@ BD_data = 1 - spec_data(:,2:end);
 
 for i = 1:size(BD_data,2)
     %Use findpeaks to find
-    [~,locs] = findpeaks(BD_data, 'MinPeakProminence',minProminence, 'MinPeakDistance',minDistance);
+    [~,locs] = findpeaks(BD_data(:,i), 'MinPeakProminence',minProminence, 'MinPeakDistance',minDistance);
 
     %Plot and return data in reflectance space
-    wav_peak_data = spec_data(locs,:);
+    wav_peak_data{i} = [spec_data(locs,1), BD_data(locs,i)];
 
     figure(i)
-    plot(spec_data(:,1), spec_data(:,2), '-k'); hold on;
-    scatter(spec_data(locs,1), spec_data(locs,2),'*','red');
+    plot(spec_data(:,1), spec_data(:,i+1), '-k'); hold on;
+    scatter(spec_data(locs,1), spec_data(locs,i+1),'*','red');
 end
 
 end
